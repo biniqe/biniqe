@@ -86,6 +86,9 @@
         table { border-collapse: collapse; text-align: center; }
         th, td { width: 42px; height: 42px; border: 1px solid #e0e0e0; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.15s; }
         th { background-color: #f8f9fa; color: #555; font-size: 13px; }
+        
+        /* 음절표 선택/하이라이트 스타일 */
+        th.highlight { background-color: #bbdefb !important; color: #0d47a1 !important; }
         td.highlight { background-color: #e3f2fd !important; color: #1565c0; }
         td.selected { background-color: #2196f3 !important; color: #ffffff !important; }
 
@@ -124,7 +127,6 @@
             letter-spacing: 2px;
         }
 
-        /* 스케치북 구조 그리드 */
         .sketch-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -147,13 +149,11 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.05);
         }
 
-        /* 스케치 색상 매칭 (초성: 핑크, 모음: 연두, 받침: 하늘색) */
         .box-cho { background: #ffcdd2; border: 2px solid #ef5350; grid-column: 1; grid-row: 1; }
         .box-jung-bottom { background: #c8e6c9; border: 2px solid #66bb6a; grid-column: 1; grid-row: 2; }
         .box-jong { background: #bbdefb; border: 2px solid #42a5f5; grid-column: 1; grid-row: 3; }
         .box-jung-right { background: #c8e6c9; border: 2px solid #66bb6a; grid-column: 3; grid-row: 1 / span 3; height: 100%; align-content: center; }
 
-        /* 정중앙 조합 결과 상자 */
         .center-result-box {
             grid-column: 2;
             grid-row: 1 / span 3;
@@ -197,7 +197,6 @@
         .p-btn:hover { background-color: #f1f1f1; transform: scale(0.95); }
         .p-btn.active { background-color: #1565c0; color: white; border-color: #0d47a1; }
 
-        /* 제어 버튼 그룹 */
         .control-panel {
             display: flex;
             gap: 15px;
@@ -252,21 +251,12 @@
                     <div class="board-title">한글 만들기</div>
 
                     <div class="sketch-grid">
-                        <!-- 1. 초성 (왼쪽 위 핑크색 박스) -->
                         <div class="palette-box box-cho" id="paletteCho"></div>
-
-                        <!-- 정중앙 완성 글자 및 듣기 버튼 -->
                         <div class="center-result-box">
                             <div class="result-char" id="txtResult">-</div>
                         </div>
-
-                        <!-- 2. 우측 모음 (오른쪽 긴 연두색 박스) -->
                         <div class="palette-box box-jung-right" id="paletteJungRight"></div>
-
-                        <!-- 3. 아래쪽 모음 (왼쪽 중간 연두색 박스) -->
                         <div class="palette-box box-jung-bottom" id="paletteJungBottom"></div>
-
-                        <!-- 4. 받침 (왼쪽 아래 파란색 박스, 쌍자음/없음 제외) -->
                         <div class="palette-box box-jong" id="paletteJong"></div>
                     </div>
 
@@ -340,14 +330,12 @@
                 let btn = document.createElement('button');
                 btn.className = 'p-btn';
                 btn.textContent = item;
-                // 클릭 시 대상 영역에 맞게 독립적으로 데이터 갱신
                 btn.onclick = () => { onClick(item); updateBuilderUI(); };
                 container.appendChild(btn);
             });
         }
 
         function updateBuilderUI() {
-            // 영역별로 독립적으로 활성화 상태를 체크하도록 수정 (초성/중성/종성이 서로 겹쳐서 불이 들어오지 않음)
             const updateBoxActive = (id, targetVal) => {
                 const container = document.getElementById(id);
                 if (!container) return;
@@ -387,36 +375,64 @@
         }
 
         const consonantNames = {'ㄱ':'기역','ㄲ':'쌍기역','ㄴ':'니은','ㄷ':'디귿','ㄸ':'쌍디귿','ㄹ':'리을','ㅁ':'미음','ㅂ':'비읍','ㅃ':'쌍비읍','ㅅ':'시옷','ㅆ':'쌍시옷','ㅇ':'이응','ㅈ':'지읒','ㅉ':'쌍지읒','ㅊ':'치읓','ㅋ':'키읔','ㅌ':'티읕','ㅍ':'피읖','ㅎ':'히읗'};
+        
         function createTable(tableId, rowHeaders, colHeaders, isJongseongTable = false) {
             const table = document.getElementById(tableId);
             table.innerHTML = '';
+            
             let headerRow = document.createElement('tr');
             let corner = document.createElement('th');
             corner.textContent = isJongseongTable ? '자\\받침' : '자\\모';
             headerRow.appendChild(corner);
-            colHeaders.forEach(col => {
+            
+            colHeaders.forEach((col, cIdx) => {
                 let th = document.createElement('th');
                 th.textContent = col;
+                th.dataset.colIdx = cIdx;
                 th.onclick = () => playPronunciation(consonantNames[col] || col);
                 headerRow.appendChild(th);
             });
             table.appendChild(headerRow);
+
             rowHeaders.forEach((rowHead, rIdx) => {
                 let row = document.createElement('tr');
                 let rTh = document.createElement('th');
                 rTh.textContent = rowHead;
+                rTh.dataset.rowIdx = rIdx;
                 rTh.onclick = () => playPronunciation(consonantNames[rowHead] || rowHead);
                 row.appendChild(rTh);
+
                 colHeaders.forEach((colHead, cIdx) => {
                     let td = document.createElement('td');
                     let syllable = isJongseongTable ? getSyllable(rowHead, 'ㅏ', colHead) : getSyllable(rowHead, colHead, '');
                     td.textContent = syllable;
-                    td.onclick = () => { playPronunciation(syllable); };
+                    
+                    // 글자 클릭 시 행(자음)과 열(모음) 헤더 하이라이트 기능 추가
+                    td.onclick = () => {
+                        playPronunciation(syllable);
+                        
+                        // 기존 테이블 내의 모든 하이라이트/선택 효과 제거
+                        table.querySelectorAll('th, td').forEach(el => {
+                            el.classList.remove('highlight', 'selected');
+                        });
+
+                        // 현재 클릭한 셀 선택 표시
+                        td.classList.add('selected');
+
+                        // 해당 행의 자음 헤더 및 해당 열의 모음 헤더에 하이라이트 부여
+                        let rowHeaderEl = row.querySelector('th');
+                        if (rowHeaderEl) rowHeaderEl.classList.add('highlight');
+
+                        let colHeaderEl = headerRow.children[cIdx + 1];
+                        if (colHeaderEl) colHeaderEl.classList.add('highlight');
+                    };
+
                     row.appendChild(td);
                 });
                 table.appendChild(row);
             });
         }
+
         function playPronunciation(text) {
             if (!('speechSynthesis' in window) || !text) return;
             window.speechSynthesis.cancel();
