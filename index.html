@@ -3,28 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한글 음절표 - 전체 음성 지원</title>
+    <title>한글 학습 음절표</title>
     <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            background-color: #f4f6f9;
-            margin: 0;
+        }
+
+        /* 상단 네비게이션바 및 햄버거 버튼 */
+        .navbar {
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            margin-right: 15px;
+            color: #333;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 슬라이드 사이드바 (햄버거 메뉴) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 200;
+            padding-top: 80px;
+            box-sizing: border-box;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        /* 배경 어둡게 처리 (사이드바 열릴 때) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: none;
+            z-index: 150;
+        }
+
+        .overlay.open {
+            display: block;
+        }
+
+        /* 본문 영역 */
+        .main-content {
+            margin-top: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         h2 {
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            text-align: center;
         }
 
         p.guide {
             color: #666;
             font-size: 14px;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .table-container {
@@ -33,6 +128,7 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
         }
 
         table {
@@ -41,174 +137,235 @@
         }
 
         th, td {
-            width: 45px;
-            height: 45px;
+            width: 42px;
+            height: 42px;
             border: 1px solid #e0e0e0;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             transition: background-color 0.15s ease, color 0.15s ease;
             cursor: pointer;
         }
 
-        /* 분류 헤더 스타일 (클릭 가능하도록 마우스 커서 추가) */
         th {
             background-color: #f8f9fa;
             color: #555;
-            font-size: 14px;
-            cursor: pointer;
+            font-size: 13px;
         }
 
-        th:hover {
-            background-color: #e9ecef;
-            color: #000;
-        }
-
-        /* 마우스 오버 시 십자 하이라이트 */
         td.highlight {
             background-color: #e3f2fd !important;
             color: #1565c0;
         }
 
-        /* 클릭된 음절 강조 */
         td.selected {
             background-color: #2196f3 !important;
             color: #ffffff !important;
+        }
+
+        .page-section {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-section.active {
+            display: flex;
         }
     </style>
 </head>
 <body>
 
-    <h2>한글 음절표</h2>
-    
-    <div class="table-container">
-        <table id="hangeulTable">
-            <!-- 자바스크립트로 생성 -->
-        </table>
+    <!-- 상단바 -->
+    <div class="navbar">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="nav-title" id="navTitle">기본 음절표 (기본 자모음)</div>
+    </div>
+
+    <!-- 사이드바 메뉴 -->
+    <div class="sidebar" id="sidebar">
+        <a href="#" onclick="switchPage('page1', '기본 음절표')" class="active" id="menu1">1. 기본 음절표 (기본 자모음)</a>
+        <a href="#" onclick="switchPage('page2', '쌍자음 음절표')" id="menu2">2. 쌍자음 음절표 (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ)</a>
+        <a href="#" onclick="switchPage('page3', '복합 모음표')" id="menu3">3. 복합 모음표 (ㅚ, ㅙ, ㅒ, ㅖ, ㅟ, ㅞ, ㅢ)</a>
+        <a href="#" onclick="switchPage('page4', '받침(종성) 음절표')" id="menu4">4. 받침(종성) 음절표</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- 본문 내용 -->
+    <div class="main-content">
+
+        <!-- 페이지 1: 기존 기본 음절표 -->
+        <div id="page1" class="page-section active">
+            <h2>기본 음절표</h2>
+            <p class="guide">글자를 누르거나 행렬을 확인하여 발음을 들어보세요.</p>
+            <div class="table-container">
+                <table id="table1"></table>
+            </div>
+        </div>
+
+        <!-- 페이지 2: 쌍자음 음절표 -->
+        <div id="page2" class="page-section">
+            <h2>쌍자음 음절표</h2>
+            <p class="guide">쌍자음(ㄲ, ㄸ, ㅃ, ㅆ, ㅉ)과 기본 모음의 결합입니다.</p>
+            <div class="table-container">
+                <table id="table2"></table>
+            </div>
+        </div>
+
+        <!-- 페이지 3: 복합 모음표 (일반 자음 + 복합 모음) -->
+        <div id="page3" class="page-section">
+            <h2>복합 모음표</h2>
+            <p class="guide">일반 자음과 복합 모음(ㅚ, ㅙ, ㅒ, ㅖ, ㅟ, ㅞ, ㅢ 등)의 결합입니다.</p>
+            <div class="table-container">
+                <table id="table3"></table>
+            </div>
+        </div>
+
+        <!-- 페이지 4: 받침(종성) 음절표 (예시: 'ㄱ' 초성 + 모음 + 'ㄱ' 받침 등 대표 조합) -->
+        <div id="page4" class="page-section">
+            <h2>받침(종성) 음절표</h2>
+            <p class="guide">기본 자음, 'ㅏ' 모음, 그리고 다양한 받침이 결합된 음절표입니다.</p>
+            <div class="table-container">
+                <table id="table4"></table>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const choseong = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-        const jungseong = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
+        // 데이터 정의
+        const basicChoseong = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const doubleChoseong = ['ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ'];
+        const basicJungseong = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
+        const complexJungseong = ['ㅐ', 'ㅒ', 'ㅔ', 'ㅖ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅢ'];
+        const jongseongList = ['없음', 'ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ', 'ㄲ', 'ㅆ'];
 
-        // 자음 이름 매핑 (TTS가 'ㄱ'을 읽을 때 '기역' 등으로 또렷하게 읽도록 변환)
+        const choMap = { 'ㄱ':0, 'ㄲ':1, 'ㄴ':2, 'ㄷ':3, 'ㄸ':4, 'ㄹ':5, 'ㅁ':6, 'ㅂ':7, 'ㅃ':8, 'ㅅ':9, 'ㅆ':10, 'ㅇ':11, 'ㅈ':12, 'ㅉ':13, 'ㅊ':14, 'ㅋ':15, 'ㅌ':16, 'ㅍ':17, 'ㅎ':18 };
+        const jungMap = { 'ㅏ':0, 'ㅐ':1, 'ㅑ':2, 'ㅒ':3, 'ㅓ':4, 'ㅔ':5, 'ㅕ':6, 'ㅖ':7, 'ㅗ':8, 'ㅘ':9, 'ㅙ':10, 'ㅚ':11, 'ㅛ':12, 'ㅜ':13, 'ㅝ':14, 'ㅞ':15, 'ㅟ':16, 'ㅠ':17, 'ㅡ':18, 'ㅢ':19, 'ㅣ':20 };
+        const jongMap = { '없음':0, 'ㄱ':1, 'ㄲ':2, 'ㄳ':3, 'ㄴ':4, 'ㄵ':5, 'ㄶ':6, 'ㄷ':7, 'ㄹ':8, 'ㄺ':9, 'ㄻ':10, 'ㄼ':11, 'ㄽ':12, 'ㄾ':13, 'ㄿ':14, 'ㅀ':15, 'ㅁ':16, 'ㅂ':17, 'ㅄ':18, 'ㅅ':19, 'ㅆ':20, 'ㅇ':21, 'ㅈ':22, 'ㅊ':23, 'ㅋ':24, 'ㅌ':25, 'ㅍ':26, 'ㅎ':27 };
+
         const consonantNames = {
-            'ㄱ': '기역', 'ㄴ': '니은', 'ㄷ': '디귿', 'ㄹ': '리을',
-            'ㅁ': '미음', 'ㅂ': '비읍', 'ㅅ': '시옷', 'ㅇ': '이응',
-            'ㅈ': '지읒', 'ㅊ': '치읓', 'ㅋ': '키읔', 'ㅌ': '티읕',
-            'ㅍ': '피읖', 'ㅎ': '히읗'
+            'ㄱ':'기역', 'ㄲ':'쌍기역', 'ㄴ':'니은', 'ㄷ':'디귿', 'ㄸ':'쌍디귿',
+            'ㄹ':'리을', 'ㅁ':'미음', 'ㅂ':'비읍', 'ㅃ':'쌍비읍', 'ㅅ':'시옷',
+            'ㅆ':'쌍시옷', 'ㅇ':'이응', 'ㅈ':'지읒', 'ㅉ':'쌍지읒', 'ㅊ':'치읓',
+            'ㅋ':'키읔', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
         };
 
-        const choMap = [0, 2, 3, 5, 6, 7, 9, 11, 12, 14, 15, 16, 17, 18]; 
-        const jungMap = [0, 2, 4, 6, 8, 12, 13, 17, 18, 20]; 
-
-        const getSyllable = (cIndex, jIndex) => {
-            const base = 44032; 
-            const choVal = choMap[cIndex] * 21 * 28;
-            const jungVal = jungMap[jIndex] * 28;
-            return String.fromCharCode(base + choVal + jungVal);
+        const getSyllable = (cho, jung, jong = '없음') => {
+            const base = 44032;
+            const cIdx = choMap[cho] !== undefined ? choMap[cho] : 0;
+            const jIdx = jungMap[jung] !== undefined ? jungMap[jung] : 0;
+            const jngIdx = jongMap[jong] !== undefined ? jongMap[jong] : 0;
+            return String.fromCharCode(base + (cIdx * 21 * 28) + (jIdx * 28) + jngIdx);
         };
 
-        const table = document.getElementById('hangeulTable');
+        // 햄버거 메뉴 토글
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        }
 
-        // 1. 헤더(모음) 행 생성
-        let headerRow = document.createElement('tr');
-        let cornerCell = document.createElement('th');
-        cornerCell.textContent = '자/모';
-        cornerCell.style.cursor = 'default';
-        headerRow.appendChild(cornerCell);
-
-        jungseong.forEach((j) => {
-            let th = document.createElement('th');
-            th.textContent = j;
-            // 모음 헤더 클릭 시 발음 재생
-            th.addEventListener('click', () => {
-                playPronunciation(j);
-            });
-            headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
-
-        // 2. 본문(자음 + 음절) 행 생성
-        choseong.forEach((cho, cIndex) => {
-            let row = document.createElement('tr');
+        // 페이지 전환
+        function switchPage(pageId, titleText) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar a').forEach(el => el.classList.remove('active'));
             
-            // 자음 헤더 생성
-            let rowHeader = document.createElement('th');
-            rowHeader.textContent = cho;
-            // 자음 헤더 클릭 시 (예: 'ㄱ' -> '기역'으로 정확히 읽어줌)
-            rowHeader.addEventListener('click', () => {
-                const speakText = consonantNames[cho] || cho;
-                playPronunciation(speakText);
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+            document.getElementById('navTitle').textContent = titleText;
+            toggleSidebar();
+        }
+
+        // 테이블 생성 함수 공통화
+        function createTable(tableId, rowHeaders, colHeaders, isJongseongTable = false) {
+            const table = document.getElementById(tableId);
+            table.innerHTML = '';
+
+            // 헤더 행
+            let headerRow = document.createElement('tr');
+            let corner = document.createElement('th');
+            corner.textContent = isJongseongTable ? '자\\받침' : '자\\모';
+            headerRow.appendChild(corner);
+
+            colHeaders.forEach(col => {
+                let th = document.createElement('th');
+                th.textContent = col;
+                th.addEventListener('click', () => playPronunciation(consonantNames[col] || col));
+                headerRow.appendChild(th);
             });
-            row.appendChild(rowHeader);
+            table.appendChild(headerRow);
 
-            // 음절 셀 생성
-            jungseong.forEach((jung, jIndex) => {
-                let td = document.createElement('td');
-                const syllable = getSyllable(cIndex, jIndex);
-                
-                td.textContent = syllable;
-                td.dataset.row = cIndex + 1;
-                td.dataset.col = jIndex + 1;
-                
-                td.addEventListener('mouseenter', () => {
-                    highlightCell(cIndex + 1, jIndex + 1);
+            // 본문 행
+            rowHeaders.forEach((rowHead, rIdx) => {
+                let row = document.createElement('tr');
+                let rTh = document.createElement('th');
+                rTh.textContent = rowHead;
+                rTh.addEventListener('click', () => playPronunciation(consonantNames[rowHead] || rowHead));
+                row.appendChild(rTh);
+
+                colHeaders.forEach((colHead, cIdx) => {
+                    let td = document.createElement('td');
+                    let syllable = '';
+
+                    if (!isJongseongTable) {
+                        syllable = getSyllable(rowHead, colHead, '없음');
+                    } else {
+                        // 종성 테이블의 경우: 초성 'ㄱ', 모음 'ㅏ', 종성 colHead 조합
+                        syllable = getSyllable(rowHead, 'ㅏ', colHead);
+                    }
+
+                    td.textContent = syllable;
+                    td.dataset.row = rIdx + 1;
+                    td.dataset.col = cIdx + 1;
+
+                    td.addEventListener('mouseenter', () => highlightTableCells(table, rIdx + 1, cIdx + 1));
+                    td.addEventListener('click', () => {
+                        playPronunciation(syllable);
+                        selectTableCell(table, td, rIdx + 1, cIdx + 1);
+                    });
+
+                    row.appendChild(td);
                 });
-
-                td.addEventListener('click', () => {
-                    playPronunciation(syllable);
-                    selectCell(td, cIndex + 1, jIndex + 1);
-                });
-
-                row.appendChild(td);
+                table.appendChild(row);
             });
-            table.appendChild(row);
-        });
 
-        table.addEventListener('mouseleave', () => {
-            clearHighlight();
-        });
+            table.addEventListener('mouseleave', () => clearTableHighlight(table));
+        }
 
-        function highlightCell(targetRow, targetCol) {
-            clearHighlight();
-            const cells = table.querySelectorAll('td[data-row]');
-            
-            cells.forEach(cell => {
-                const r = parseInt(cell.dataset.row);
-                const c = parseInt(cell.dataset.col);
-
-                if (r === targetRow || c === targetCol) {
+        function highlightTableCells(table, tRow, tCol) {
+            clearTableHighlight(table);
+            table.querySelectorAll('td[data-row]').forEach(cell => {
+                if (parseInt(cell.dataset.row) === tRow || parseInt(cell.dataset.col) === tCol) {
                     cell.classList.add('highlight');
                 }
             });
         }
 
-        function selectCell(selectedTd, targetRow, targetCol) {
-            highlightCell(targetRow, targetCol);
-            selectedTd.classList.add('selected');
+        function selectTableCell(table, td, tRow, tCol) {
+            highlightTableCells(table, tRow, tCol);
+            td.classList.add('selected');
         }
 
-        function clearHighlight() {
-            const cells = table.querySelectorAll('td');
-            cells.forEach(cell => {
-                cell.classList.remove('highlight', 'selected');
-            });
+        function clearTableHighlight(table) {
+            table.querySelectorAll('td').forEach(cell => cell.classList.remove('highlight', 'selected'));
         }
 
         function playPronunciation(text) {
-            if (!('speechSynthesis' in window)) {
-                alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
-                return;
-            }
-
+            if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ko-KR';
             utterance.rate = 0.9;
-            
             window.speechSynthesis.speak(utterance);
         }
+
+        // 초기화 실행
+        window.onload = () => {
+            createTable('table1', basicChoseong, basicJungseong);          // 1. 기본 음절표
+            createTable('table2', doubleChoseong, basicJungseong);         // 2. 쌍자음 음절표
+            createTable('table3', basicChoseong, complexJungseong);       // 3. 복합 모음표
+            createTable('table4', basicChoseong, jongseongList, true);     // 4. 종성(받침) 음절표 ('ㅏ' 기준)
+        };
     </script>
 </body>
 </html>
