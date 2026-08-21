@@ -89,109 +89,112 @@
         td.highlight { background-color: #e3f2fd !important; color: #1565c0; }
         td.selected { background-color: #2196f3 !important; color: #ffffff !important; }
 
-        /* ================= 아이 맞춤형 시각적 한글 조합기 스타일 ================= */
+        /* ================= 아이 맞춤형 그림 스타일 배치 ================= */
         .kids-builder-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 20px;
-            max-width: 800px;
+            max-width: 850px;
             width: 100%;
         }
 
         .kids-main-card {
             background: #ffffff;
-            border: 2px solid #2196f3;
-            border-radius: 20px;
-            padding: 20px;
+            border: 3px solid #ff9800;
+            border-radius: 24px;
+            padding: 25px;
             width: 100%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             align-items: center;
+            box-sizing: border-box;
         }
 
         .kids-title-bar {
             background-color: #ff9800;
             color: white;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
-            padding: 10px 30px;
+            padding: 10px 40px;
             border-radius: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            letter-spacing: 2px;
         }
 
-        /* 시각적 배치 그리드 (그림 디자인 반영) */
+        /* 그림과 정확히 일치하는 그리드 구조 (초성, 우측모음, 아래모음, 받침 위치) */
         .visual-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 2fr 2fr 1.5fr;
             grid-template-rows: auto auto auto;
             gap: 15px;
             width: 100%;
-            max-width: 650px;
+            max-width: 750px;
             align-items: center;
             justify-items: center;
         }
 
         .palette-box {
-            background: #f8f9fa;
-            border: 2px solid #ddd;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 15px;
             width: 100%;
             box-sizing: border-box;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             justify-content: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
         }
 
-        /* 색상 영역별 테두리 및 배경 */
-        .box-cho { background: #ffebee; border-color: #ef9a9a; }
-        .box-jung-right { background: #e8f5e9; border-color: #a5d6a7; }
-        .box-jung-bottom { background: #e8f5e9; border-color: #a5d6a7; }
-        .box-jong { background: #e3f2fd; border-color: #90caf9; }
+        /* 지정해주신 색상 매칭 (초성: 핑크, 모음: 연두, 받침: 하늘색) */
+        .box-cho { background: #ffcdd2; border: 2px solid #ef5350; }
+        .box-jung-right { background: #c8e6c9; border: 2px solid #66bb6a; }
+        .box-jung-bottom { background: #c8e6c9; border: 2px solid #66bb6a; }
+        .box-jong { background: #bbdefb; border: 2px solid #42a5f5; }
 
         .p-btn {
             background-color: #ffffff;
-            border: 1px solid #ccc;
+            border: 1px solid rgba(0,0,0,0.15);
             border-radius: 8px;
-            width: 40px;
-            height: 40px;
-            font-size: 16px;
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.15s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .p-btn:hover { background-color: #f1f1f1; }
-        .p-btn.active { background-color: #2196f3; color: white; border-color: #1976d2; }
+        .p-btn:hover { background-color: #f1f1f1; transform: translateY(-2px); }
+        .p-btn.active { background-color: #1565c0; color: white; border-color: #0d47a1; }
 
-        /* 결과 글자 보여주기 박스 */
+        /* 정중앙 글자 결과 박스 (흰색 카드 안의 커다란 글자) */
         .result-display-box {
             grid-column: 2;
             grid-row: 2;
-            background: #fff8e1;
-            border: 3px dashed #ffb300;
-            border-radius: 16px;
-            width: 110px;
-            height: 110px;
+            background: #ffffff;
+            border: 3px solid #ff9800;
+            border-radius: 20px;
+            width: 130px;
+            height: 130px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 64px;
+            font-size: 75px;
             font-weight: bold;
             color: #d32f2f;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
         /* 하단 제어 버튼 */
         .control-panel {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 30px;
             width: 100%;
             max-width: 400px;
         }
@@ -204,7 +207,7 @@
             font-weight: bold;
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
         .btn-listen { background-color: #4caf50; color: white; }
         .btn-listen:hover { background-color: #43a047; }
@@ -234,7 +237,7 @@
         <div id="page3" class="page-section"><h2>복합 모음표</h2><div class="table-container"><table id="table3"></table></div></div>
         <div id="page4" class="page-section"><h2>받침(종성) 음절표</h2><div class="table-container"><table id="table4"></table></div></div>
         
-        <!-- 페이지 5: 아이 맞춤형 시각적 조합기 -->
+        <!-- 페이지 5: 그림 디자인 완벽 반영 조합기 -->
         <div id="page5" class="page-section">
             <h2>한글 만들기 조합</h2>
             <p class="guide">자음과 모음을 콕콕 눌러서 글자가 어떻게 만들어지는지 눈으로 확인해 보세요!</p>
@@ -244,19 +247,19 @@
                     <div class="kids-title-bar">한글 만들기</div>
 
                     <div class="visual-layout">
-                        <!-- 1. 초성 (왼쪽 위) -->
+                        <!-- 1. 초성 (왼쪽 위 핑크 박스) -->
                         <div class="palette-box box-cho" id="paletteCho" style="grid-column: 1; grid-row: 1;"></div>
 
-                        <!-- 2. 우측 모음 (오른쪽 위) : ㅏ, ㅑ, ㅓ, ㅕ, ㅣ 등 -->
+                        <!-- 2. 우측 모음 (오른쪽 연두 박스) -->
                         <div class="palette-box box-jung-right" id="paletteJungRight" style="grid-column: 3; grid-row: 1;"></div>
 
-                        <!-- 중앙 결과 화면 -->
+                        <!-- 정중앙 완성 글자 박스 -->
                         <div class="result-display-box" id="txtResult">-</div>
 
-                        <!-- 3. 아래쪽 모음 (가운데 아래) : ㅗ, ㅛ, ㅜ, ㅠ, ㅡ 등 -->
+                        <!-- 3. 아래쪽 모음 (가운데 아래 연두 박스) -->
                         <div class="palette-box box-jung-bottom" id="paletteJungBottom" style="grid-column: 2; grid-row: 2;"></div>
 
-                        <!-- 4. 종성/받침 (맨 아래) : 쌍자음 제외한 기본 받침 -->
+                        <!-- 4. 종성/받침 (맨 아래 파란색 박스, 쌍자음 및 없음 버튼 제외) -->
                         <div class="palette-box box-jong" id="paletteJong" style="grid-column: 1 / span 3; grid-row: 3;"></div>
                     </div>
 
@@ -319,16 +322,9 @@
         }
 
         function initBuilder() {
-            // 초성 팔레트 (쌍자음 포함 전체)
             renderPalette('paletteCho', [...basicChoseong, ...doubleChoseong], (val) => currentCho = (currentCho === val) ? '' : val);
-            
-            // 우측 모음 팔레트
             renderPalette('paletteJungRight', rightJungList, (val) => currentJung = (currentJung === val) ? '' : val);
-            
-            // 아래쪽 모음 팔레트
             renderPalette('paletteJungBottom', bottomJungList, (val) => currentJung = (currentJung === val) ? '' : val);
-            
-            // 종성 팔레트 (쌍자음 제외, 없음 버튼 없음)
             renderPalette('paletteJong', jongseongList, (val) => currentJong = (currentJong === val) ? '' : val);
         }
 
