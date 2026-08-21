@@ -340,19 +340,26 @@
                 let btn = document.createElement('button');
                 btn.className = 'p-btn';
                 btn.textContent = item;
+                // 클릭 시 대상 영역에 맞게 독립적으로 데이터 갱신
                 btn.onclick = () => { onClick(item); updateBuilderUI(); };
                 container.appendChild(btn);
             });
         }
 
         function updateBuilderUI() {
-            ['paletteCho', 'paletteJungRight', 'paletteJungBottom', 'paletteJong'].forEach(id => {
+            // 영역별로 독립적으로 활성화 상태를 체크하도록 수정 (초성/중성/종성이 서로 겹쳐서 불이 들어오지 않음)
+            const updateBoxActive = (id, targetVal) => {
                 const container = document.getElementById(id);
+                if (!container) return;
                 container.querySelectorAll('.p-btn').forEach(btn => {
-                    const val = btn.textContent;
-                    btn.classList.toggle('active', val === currentCho || val === currentJung || val === currentJong);
+                    btn.classList.toggle('active', btn.textContent === targetVal);
                 });
-            });
+            };
+
+            updateBoxActive('paletteCho', currentCho);
+            updateBoxActive('paletteJungRight', currentJung);
+            updateBoxActive('paletteJungBottom', currentJung);
+            updateBoxActive('paletteJong', currentJong);
 
             let resultChar = getSyllable(currentCho, currentJung, currentJong);
             document.getElementById('txtResult').textContent = resultChar || '-';
