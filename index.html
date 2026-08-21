@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한글 학습 및 조합 앱</title>
+    <!-- PWA Manifest 연결 -->
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
@@ -23,12 +25,18 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 20px;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 100;
             box-sizing: border-box;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
         }
 
         .hamburger {
@@ -45,6 +53,22 @@
             font-size: 18px;
             font-weight: bold;
             color: #333;
+        }
+
+        .install-btn {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none; /* 설치 가능할 때만 표시 */
+        }
+
+        .install-btn:hover {
+            background-color: #1976d2;
         }
 
         /* 슬라이드 사이드바 */
@@ -179,7 +203,7 @@
             gap: 20px;
             justify-content: center;
             align-items: flex-start;
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
         }
 
@@ -191,7 +215,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            width: 160px;
+            width: 220px; /* 폭을 넓혀서 아이콘들이 충분히 들어가도록 수정 */
             box-sizing: border-box;
         }
 
@@ -209,16 +233,12 @@
             gap: 4px;
         }
 
-        .palette-grid.col-2 {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
         .p-btn {
             background-color: #f8f9fa;
             border: 1px solid #ddd;
             border-radius: 6px;
             height: 32px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -265,7 +285,7 @@
         .slot-row {
             display: flex;
             gap: 10px;
-            height: 130px; /* 높이 늘림 */
+            height: 130px;
         }
 
         .slot {
@@ -291,7 +311,7 @@
 
         /* 구역별 색상 테마 */
         .slot.cho { background-color: #ffcdd2; color: #b71c1c; }
-        .slot.jung-v { background-color: #c8e6c9; color: #1b5e20; } /* 중성 */
+        .slot.jung-v { background-color: #c8e6c9; color: #1b5e20; }
         .slot.jong { background-color: #bbdefb; color: #0d47a1; }
 
         .result-display-box {
@@ -338,8 +358,11 @@
 
     <!-- 상단바 -->
     <div class="navbar">
-        <button class="hamburger" onclick="toggleSidebar()">☰</button>
-        <div class="nav-title" id="navTitle">1. 기본 음절표</div>
+        <div class="nav-left">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="nav-title" id="navTitle">1. 기본 음절표</div>
+        </div>
+        <button id="installBtn" class="install-btn">앱 설치</button>
     </div>
 
     <!-- 사이드바 메뉴 -->
@@ -429,9 +452,9 @@
 
                 <!-- 오른쪽 팔레트 (중성) -->
                 <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div class="palette-box" style="width: 140px;">
+                    <div class="palette-box" style="width: 220px;">
                         <div class="palette-title">중성</div>
-                        <div class="palette-grid col-2" id="paletteJungV"></div>
+                        <div class="palette-grid" id="paletteJungV"></div>
                     </div>
                 </div>
             </div>
@@ -455,7 +478,7 @@
             'ㄱ':'기역', 'ㄲ':'쌍기역', 'ㄴ':'니은', 'ㄷ':'디귿', 'ㄸ':'쌍디귿',
             'ㄹ':'리을', 'ㅁ':'미음', 'ㅂ':'비읍', 'ㅃ':'쌍비읍', 'ㅅ':'시옷',
             'ㅆ':'쌍시옷', 'ㅇ':'이응', 'ㅈ':'지읒', 'ㅉ':'쌍지읒', 'ㅊ':'치읓',
-            'ㅋ':'키eun', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
+            'ㅋ':'키읔', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
         };
 
         const getSyllable = (cho, jung, jong = '') => {
@@ -588,7 +611,7 @@
                 pCho.appendChild(btn);
             });
 
-            // 2. 중성 팔레트 채우기 (가로+세로 통합)
+            // 2. 중성 팔레트 채우기
             const pJungV = document.getElementById('paletteJungV');
             pJungV.innerHTML = '';
             allJung.forEach(j => {
@@ -609,7 +632,6 @@
                 let btn = document.createElement('button');
                 btn.className = 'p-btn';
                 btn.textContent = j;
-                btn.style.fontSize = '15px';
                 btn.onclick = () => {
                     currentJong = (currentJong === j) ? '' : j;
                     updateBuilderUI();
@@ -650,6 +672,27 @@
                 alert('초성과 모음을 최소 하나 이상 선택해 주세요!');
             }
         }
+
+        // ================= PWA 앱 설치(BeforeInstallPrompt) 로직 =================
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block'; // 설치 버튼 노출
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('사용자가 앱 설치를 수락했습니다.');
+            }
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        });
 
         // 초기화 실행
         window.onload = () => {
