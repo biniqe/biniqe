@@ -4,29 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한글 학습 조합기</title>
+    <!-- 구글 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; padding: 20px; }
-        .maker-frame { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
-        
-        .slot-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 30px; }
-        .top-row { display: flex; gap: 15px; }
-        
-        .slot { width: 80px; height: 80px; border: 2px solid #e0e0e0; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; transition: all 0.3s; }
-        .jong-slot { width: 175px; }
+        :root {
+            --primary: #4a90e2;
+            --cho-color: #fff5f5;
+            --jung-color: #f1f8e9;
+            --jong-color: #e3f2fd;
+        }
 
-        /* 색상 구분 */
-        .cho { background-color: #fff5f5; border-color: #ffcdd2; }
-        .jung { background-color: #f1f8e9; border-color: #c8e6c9; }
-        .jong { background-color: #e3f2fd; border-color: #bbdefb; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 10px; }
-        .p-btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-cho { background-color: #e57373; color: white; }
-        .btn-jung { background-color: #81c784; color: white; }
-        .btn-jong { background-color: #64b5f6; color: white; }
+        .maker-frame {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .slot-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .slot {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .slot.cho { background-color: var(--cho-color); }
+        .slot.jung-v { background-color: var(--jung-color); }
+        .slot.jong { background-color: var(--jong-color); }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .p-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .p-btn:active { transform: scale(0.95); }
         
-        #txtResult { font-size: 5rem; margin: 20px 0; color: #333; font-weight: 700; height: 100px; }
+        #txtResult {
+            text-align: center;
+            font-size: 4rem;
+            margin: 20px 0;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -34,52 +87,43 @@
 <div class="maker-frame">
     <div id="txtResult">-</div>
     
-    <div class="slot-wrapper">
-        <div class="top-row">
-            <div class="slot cho" id="slot-cho">-</div>
-            <div class="slot jung" id="slot-jung">-</div>
-        </div>
-        <div class="slot jong jong-slot" id="slot-jong">-</div>
+    <div class="slot-container">
+        <div class="slot cho" id="s1"></div>
+        <div class="slot jung-v" id="s2"></div>
+        <div class="slot jong" id="s3"></div>
     </div>
 
-    <!-- 초성 버튼 -->
-    <div class="btn-group">
-        <button class="p-btn btn-cho" onclick="setSlot('cho', 'ㄱ')">ㄱ</button>
-        <button class="p-btn btn-cho" onclick="setSlot('cho', 'ㄴ')">ㄴ</button>
-    </div>
-    <!-- 중성 버튼 -->
-    <div class="btn-group">
-        <button class="p-btn btn-jung" onclick="setSlot('jung', 'ㅏ')">ㅏ</button>
-        <button class="p-btn btn-jung" onclick="setSlot('jung', 'ㅓ')">ㅓ</button>
-    </div>
-    <!-- 종성 버튼 -->
-    <div class="btn-group">
-        <button class="p-btn btn-jong" onclick="setSlot('jong', 'ㄱ')">ㄱ</button>
-        <button class="p-btn btn-jong" onclick="setSlot('jong', 'ㅁ')">ㅁ</button>
+    <div class="btn-group" id="btnContainer">
+        <!-- 버튼들은 JS로 생성하거나 HTML로 직접 입력 가능 -->
     </div>
 </div>
 
 <script>
-    // 독립적인 상태 관리
-    const state = {
-        cho: '',
-        jung: '',
-        jong: ''
-    };
+    // 기본 로직 (예시)
+    const s1 = document.getElementById('s1');
+    const s2 = document.getElementById('s2');
+    const s3 = document.getElementById('s3');
+    const result = document.getElementById('txtResult');
 
-    function setSlot(type, char) {
-        // 1. 상태 업데이트
-        state[type] = char;
-
-        // 2. 해당 슬롯만 갱신 (선택자 분리)
-        document.getElementById('slot-' + type).innerText = char;
-
-        // 3. 결과 조합 ( '-' 표시 제거를 위해 조건문 추가)
-        const displayCho = state.cho || '';
-        const displayJung = state.jung || '';
-        const displayJong = state.jong || '';
+    function updateResult() {
+        // 여기에 한글 조합 알고리즘(예: 유니코드 계산)을 추가하세요.
+        // 현재는 단순히 텍스트를 합치는 예시입니다.
+        result.innerText = s1.innerText + s2.innerText + s3.innerText;
         
-        document.getElementById('txtResult').innerText = displayCho + displayJung + displayJong;
+        // 발음 기능 (브라우저 지원 시)
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(result.innerText);
+            utterance.lang = 'ko-KR';
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // 예시 버튼 클릭 이벤트
+    function setChar(type, char) {
+        if(type === 'cho') s1.innerText = char;
+        if(type === 'jung') s2.innerText = char;
+        if(type === 'jong') s3.innerText = char;
+        updateResult();
     }
 </script>
 
