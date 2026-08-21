@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한글 학습 및 조합 앱</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 상단 네비게이션바 및 햄버거 버튼 */
+        .navbar {
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            margin-right: 15px;
+            color: #333;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 슬라이드 사이드바 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 200;
+            padding-top: 80px;
+            box-sizing: border-box;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: none;
+            z-index: 150;
+        }
+
+        .overlay.open {
+            display: block;
+        }
+
+        /* 본문 영역 */
+        .main-content {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .page-section {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-section.active {
+            display: flex;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        p.guide {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+        }
+
+        table {
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #e0e0e0;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            cursor: pointer;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #555;
+            font-size: 13px;
+        }
+
+        td.highlight {
+            background-color: #e3f2fd !important;
+            color: #1565c0;
+        }
+
+        td.selected {
+            background-color: #2196f3 !important;
+            color: #ffffff !important;
+        }
+
+        /* ================= 다이어그램(조합기) 스타일 ================= */
+        .builder-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .palette-box {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 160px;
+            box-sizing: border-box;
+        }
+
+        .palette-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .palette-grid.col-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .p-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            height: 32px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+        }
+
+        .p-btn:hover {
+            background-color: #e9ecef;
+            border-color: #bbb;
+        }
+
+        .p-btn.active {
+            background-color: #2196f3;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        /* 중앙 조합 틀 스타일 */
+        .maker-frame {
+            background: #ffffff;
+            border: 3px solid #3f51b5;
+            border-radius: 16px;
+            padding: 20px;
+            width: 320px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+
+        .maker-header {
+            background-color: #ff9800;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .slot-row {
+            display: flex;
+            gap: 10px;
+            height: 90px;
+        }
+
+        .slot {
+            flex: 1;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            border: 2px dashed rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .slot-label {
+            position: absolute;
+            top: 5px;
+            font-size: 11px;
+            font-weight: normal;
+            color: rgba(0,0,0,0.5);
+        }
+
+        /* 구역별 색상 테마 (스케치 반영) */
+        .slot.cho { background-color: #ffcdd2; color: #b71c1c; }
+        .slot.jung-v { background-color: #c8e6c9; color: #1b5e20; } /* 세로 모음 */
+        .slot.jung-h { background-color: #dcedc8; color: #33691e; } /* 가로 모음 */
+        .slot.jong { background-color: #bbdefb; color: #0d47a1; }
+
+        .result-display-box {
+            background-color: #f1f3f5;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .combined-result {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .listen-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .listen-btn:hover {
+            background-color: #43a047;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 상단바 -->
+    <div class="navbar">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="nav-title" id="navTitle">1. 기본 음절표</div>
+    </div>
+
+    <!-- 사이드바 메뉴 -->
+    <div class="sidebar" id="sidebar">
+        <a href="#" onclick="switchPage('page1', '1. 기본 음절표')" class="active" id="menu1">1. 기본 음절표 (기본 자모음)</a>
+        <a href="#" onclick="switchPage('page2', '2. 쌍자음 음절표')" id="menu2">2. 쌍자음 음절표 (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ)</a>
+        <a href="#" onclick="switchPage('page3', '3. 복합 모음표')" id="menu3">3. 복합 모음표 (ㅚ, ㅙ, ㅒ, ㅖ 등)</a>
+        <a href="#" onclick="switchPage('page4', '4. 받침(종성) 음절표')" id="menu4">4. 받침(종성) 음절표</a>
+        <a href="#" onclick="switchPage('page5', '5. 한글 만들기 조합')" id="menu5">5. 한글 만들기 조합 (직접 조립)</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- 본문 내용 -->
+    <div class="main-content">
+
+        <!-- 페이지 1 -->
+        <div id="page1" class="page-section active">
+            <h2>기본 음절표</h2>
+            <p class="guide">글자를 누르거나 행렬을 확인하여 발음을 들어보세요.</p>
+            <div class="table-container"><table id="table1"></table></div>
+        </div>
+
+        <!-- 페이지 2 -->
+        <div id="page2" class="page-section">
+            <h2>쌍자음 음절표</h2>
+            <p class="guide">쌍자음(ㄲ, ㄸ, ㅃ, ㅆ, ㅉ)과 기본 모음의 결합입니다.</p>
+            <div class="table-container"><table id="table2"></table></div>
+        </div>
+
+        <!-- 페이지 3 -->
+        <div id="page3" class="page-section">
+            <h2>복합 모음표</h2>
+            <p class="guide">일반 자음과 복합 모음의 결합입니다.</p>
+            <div class="table-container"><table id="table3"></table></div>
+        </div>
+
+        <!-- 페이지 4 -->
+        <div id="page4" class="page-section">
+            <h2>받침(종성) 음절표</h2>
+            <p class="guide">기본 자음, 'ㅏ' 모음, 그리고 다양한 받침이 결합된 음절표입니다.</p>
+            <div class="table-container"><table id="table4"></table></div>
+        </div>
+
+        <!-- 페이지 5: 한글 만들기 조합 페이지 -->
+        <div id="page5" class="page-section">
+            <h2>한글 만들기 조합</h2>
+            <p class="guide">양쪽 팔레트에서 자음과 모음을 골라 가운데 틀에 넣고 소리를 들어보세요!</p>
+            
+            <div class="builder-layout">
+                <!-- 왼쪽 팔레트 (초성 및 가로 모음) -->
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="palette-box">
+                        <div class="palette-title">초성 선택 (자음)</div>
+                        <div class="palette-grid" id="paletteCho"></div>
+                    </div>
+                    <div class="palette-box">
+                        <div class="palette-title">중성 선택 (가로 모음)</div>
+                        <div class="palette-grid" id="paletteJungH"></div>
+                    </div>
+                    <div class="palette-box">
+                        <div class="palette-title">종성 선택 (받침)</div>
+                        <div class="palette-grid" id="paletteJong"></div>
+                    </div>
+                </div>
+
+                <!-- 중앙 조합 틀 -->
+                <div class="maker-frame">
+                    <div class="maker-header">한글 만들기</div>
+                    
+                    <div class="slot-row">
+                        <div class="slot cho" id="slotCho">
+                            <span class="slot-label">초성</span>
+                            <span id="txtCho"></span>
+                        </div>
+                        <div class="slot jung-v" id="slotJungV">
+                            <span class="slot-label">세로모음</span>
+                            <span id="txtJungV"></span>
+                        </div>
+                    </div>
+
+                    <div class="slot-row" style="height: 70px;">
+                        <div class="slot jung-h" id="slotJungH">
+                            <span class="slot-label">가로모음</span>
+                            <span id="txtJungH"></span>
+                        </div>
+                    </div>
+
+                    <div class="slot-row" style="height: 80px;">
+                        <div class="slot jong" id="slotJong">
+                            <span class="slot-label">종성(받침)</span>
+                            <span id="txtJong"></span>
+                        </div>
+                    </div>
+
+                    <div class="result-display-box">
+                        <div class="combined-result" id="txtResult">-</div>
+                        <button class="listen-btn" onclick="playCombinedSyllable()">🔊 듣기</button>
+                    </div>
+                </div>
+
+                <!-- 오른쪽 팔레트 (세로 모음) -->
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="palette-box" style="width: 140px;">
+                        <div class="palette-title">중성 선택 (세로 모음)</div>
+                        <div class="palette-grid col-2" id="paletteJungV"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 데이터 정의
+        const basicChoseong = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const doubleChoseong = ['ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ'];
+        const basicJungseong = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
+        const complexJungseong = ['ㅐ', 'ㅒ', 'ㅔ', 'ㅖ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅢ'];
+        const jongseongList = ['없음', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
+        // 세로 모음 / 가로 모음 분류
+        const verticalJung = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅣ'];
+        const horizontalJung = ['ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ'];
+
+        const choMap = { 'ㄱ':0, 'ㄲ':1, 'ㄴ':2, 'ㄷ':3, 'ㄸ':4, 'ㄹ':5, 'ㅁ':6, 'ㅂ':7, 'ㅃ':8, 'ㅅ':9, 'ㅆ':10, 'ㅇ':11, 'ㅈ':12, 'ㅉ':13, 'ㅊ':14, 'ㅋ':15, 'ㅌ':16, 'ㅍ':17, 'ㅎ':18 };
+        const jungMap = { 'ㅏ':0, 'ㅐ':1, 'ㅑ':2, 'ㅒ':3, 'ㅓ':4, 'ㅔ':5, 'ㅕ':6, 'ㅖ':7, 'ㅗ':8, 'ㅘ':9, 'ㅙ':10, 'ㅚ':11, 'ㅛ':12, 'ㅜ':13, 'ㅝ':14, 'ㅞ':15, 'ㅟ':16, 'ㅠ':17, 'ㅡ':18, 'ㅢ':19, 'ㅣ':20 };
+        const jongMap = { '없음':0, 'ㄱ':1, 'ㄲ':2, 'ㄳ':3, 'ㄴ':4, 'ㄵ':5, 'ㄶ':6, 'ㄷ':7, 'ㄹ':8, 'ㄺ':9, 'ㄻ':10, 'ㄼ':11, 'ㄽ':12, 'ㄾ':13, 'ㄿ':14, 'ㅀ':15, 'ㅁ':16, 'ㅂ':17, 'ㅄ':18, 'ㅅ':19, 'ㅆ':20, 'ㅇ':21, 'ㅈ':22, 'ㅊ':23, 'ㅋ':24, 'ㅌ':25, 'ㅍ':26, 'ㅎ':27 };
+
+        const consonantNames = {
+            'ㄱ':'기역', 'ㄲ':'쌍기역', 'ㄴ':'니은', 'ㄷ':'디귿', 'ㄸ':'쌍디귿',
+            'ㄹ':'리을', 'ㅁ':'미음', 'ㅂ':'비읍', 'ㅃ':'쌍비읍', 'ㅅ':'시옷',
+            'ㅆ':'쌍시옷', 'ㅇ':'이응', 'ㅈ':'지읒', 'ㅉ':'쌍지읒', 'ㅊ':'치읓',
+            'ㅋ':'키읔', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
+        };
+
+        const getSyllable = (cho, jung, jong = '없음') => {
+            if (!cho && !jung) return '';
+            const cIdx = choMap[cho] !== undefined ? choMap[cho] : 0;
+            const jIdx = jungMap[jung] !== undefined ? jungMap[jung] : 0;
+            const jngIdx = jongMap[jong] !== undefined ? jongMap[jong] : 0;
+            
+            // 초성과 모음이 모두 있어야 완전한 유니코드 조합 글자 생성 가능
+            if (cho && jung) {
+                return String.fromCharCode(44032 + (cIdx * 21 * 28) + (jIdx * 28) + jngIdx);
+            } else if (cho && !jung) {
+                return cho; // 자음만 있는 경우
+            } else if (!cho && jung) {
+                return jung; // 모음만 있는 경우
+            }
+            return '';
+        };
+
+        // 햄버거 메뉴 토글
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        }
+
+        // 페이지 전환
+        function switchPage(pageId, titleText) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar a').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+            document.getElementById('navTitle').textContent = titleText;
+            toggleSidebar();
+        }
+
+        // 테이블 생성 함수
+        function createTable(tableId, rowHeaders, colHeaders, isJongseongTable = false) {
+            const table = document.getElementById(tableId);
+            table.innerHTML = '';
+
+            let headerRow = document.createElement('tr');
+            let corner = document.createElement('th');
+            corner.textContent = isJongseongTable ? '자\\받침' : '자\\모';
+            headerRow.appendChild(corner);
+
+            colHeaders.forEach(col => {
+                let th = document.createElement('th');
+                th.textContent = col;
+                th.addEventListener('click', () => playPronunciation(consonantNames[col] || col));
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            rowHeaders.forEach((rowHead, rIdx) => {
+                let row = document.createElement('tr');
+                let rTh = document.createElement('th');
+                rTh.textContent = rowHead;
+                rTh.addEventListener('click', () => playPronunciation(consonantNames[rowHead] || rowHead));
+                row.appendChild(rTh);
+
+                colHeaders.forEach((colHead, cIdx) => {
+                    let td = document.createElement('td');
+                    let syllable = isJongseongTable ? getSyllable(rowHead, 'ㅏ', colHead) : getSyllable(rowHead, colHead, '없음');
+                    
+                    td.textContent = syllable;
+                    td.dataset.row = rIdx + 1;
+                    td.dataset.col = cIdx + 1;
+
+                    td.addEventListener('mouseenter', () => highlightTableCells(table, rIdx + 1, cIdx + 1));
+                    td.addEventListener('click', () => {
+                        playPronunciation(syllable);
+                        selectTableCell(table, td, rIdx + 1, cIdx + 1);
+                    });
+
+                    row.appendChild(td);
+                });
+                table.appendChild(row);
+            });
+
+            table.addEventListener('mouseleave', () => clearTableHighlight(table));
+        }
+
+        function highlightTableCells(table, tRow, tCol) {
+            clearTableHighlight(table);
+            table.querySelectorAll('td[data-row]').forEach(cell => {
+                if (parseInt(cell.dataset.row) === tRow || parseInt(cell.dataset.col) === tCol) {
+                    cell.classList.add('highlight');
+                }
+            });
+        }
+
+        function selectTableCell(table, td, tRow, tCol) {
+            highlightTableCells(table, tRow, tCol);
+            td.classList.add('selected');
+        }
+
+        function clearTableHighlight(table) {
+            table.querySelectorAll('td').forEach(cell => cell.classList.remove('highlight', 'selected'));
+        }
+
+        function playPronunciation(text) {
+            if (!('speechSynthesis' in window) || !text) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // ================= 한글 조합기 로직 =================
+        let currentCho = '';
+        let currentJungV = '';
+        let currentJungH = '';
+        let currentJong = '없음';
+
+        function initBuilder() {
+            // 기본 자음 전체 (기본 + 쌍자음)
+            const allCho = [...basicChoseong, ...doubleChoseong];
+            const allJung = [...basicJungseong, ...complexJungseong];
+
+            // 1. 초성 팔레트 채우기
+            const pCho = document.getElementById('paletteCho');
+            pCho.innerHTML = '';
+            allCho.forEach(c => {
+                let btn = document.createElement('button');
+                btn.className = 'p-btn';
+                btn.textContent = c;
+                btn.onclick = () => {
+                    currentCho = (currentCho === c) ? '' : c; // 다시 누르면 해제
+                    updateBuilderUI();
+                };
+                pCho.appendChild(btn);
+            });
+
+            // 2. 세로 모음 팔레트 채우기
+            const pJungV = document.getElementById('paletteJungV');
+            pJungV.innerHTML = '';
+            allJung.filter(j => verticalJung.includes(j) || j === 'ㅐ' || j === 'ㅒ' || j === 'ㅔ' || j === 'ㅖ' || j === 'ㅢ').forEach(j => {
+                let btn = document.createElement('button');
+                btn.className = 'p-btn';
+                btn.textContent = j;
+                btn.onclick = () => {
+                    currentJungV = (currentJungV === j) ? '' : j;
+                    updateBuilderUI();
+                };
+                pJungV.appendChild(btn);
+            });
+
+            // 3. 가로 모음 팔레트 채우기
+            const pJungH = document.getElementById('paletteJungH');
+            pJungH.innerHTML = '';
+            allJung.filter(j => horizontalJung.includes(j)).forEach(j => {
+                let btn = document.createElement('button');
+                btn.className = 'p-btn';
+                btn.textContent = j;
+                btn.onclick = () => {
+                    currentJungH = (currentJungH === j) ? '' : j;
+                    updateBuilderUI();
+                };
+                pJungH.appendChild(btn);
+            });
+
+            // 4. 종성 팔레트 채우기
+            const pJong = document.getElementById('paletteJong');
+            pJong.innerHTML = '';
+            jongseongList.forEach(j => {
+                let btn = document.createElement('button');
+                btn.className = 'p-btn';
+                btn.textContent = j;
+                btn.style.fontSize = j === '없음' ? '11px' : '15px';
+                btn.onclick = () => {
+                    currentJong = (currentJong === j) ? '없음' : j;
+                    updateBuilderUI();
+                };
+                pJong.appendChild(btn);
+            });
+        }
+
+        function updateBuilderUI() {
+            // 화면 슬롯 텍스트 업데이트
+            document.getElementById('txtCho').textContent = currentCho;
+            document.getElementById('txtJungV').textContent = currentJungV;
+            document.getElementById('txtJungH').textContent = currentJungH;
+            document.getElementById('txtJong').textContent = currentJong === '없음' ? '' : currentJong;
+
+            // 팔레트 버튼 활성화 표시 스타일 갱신
+            updatePaletteActiveState('paletteCho', currentCho);
+            updatePaletteActiveState('paletteJungV', currentJungV);
+            updatePaletteActiveState('paletteJungH', currentJungH);
+            updatePaletteActiveState('paletteJong', currentJong);
+
+            // 조합된 글자 계산 (세로 모음 우선, 없으면 가로 모음 적용)
+            let activeJung = currentJungV || currentJungH || '';
+            let resultChar = getSyllable(currentCho, activeJung, currentJong);
+            document.getElementById('txtResult').textContent = resultChar || '-';
+        }
+
+        function updatePaletteActiveState(containerId, activeVal) {
+            const container = document.getElementById(containerId);
+            container.querySelectorAll('.p-btn').forEach(btn => {
+                if (btn.textContent === activeVal) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function playCombinedSyllable() {
+            let activeJung = currentJungV || currentJungH || '';
+            let resultChar = getSyllable(currentCho, activeJung, currentJong);
+            if (resultChar) {
+                playPronunciation(resultChar);
+            } else {
+                alert('초성과 모음을 최소 하나 이상 선택해 주세요!');
+            }
+        }
+
+        // 초기화 실행
+        window.onload = () => {
+            createTable('table1', basicChoseong, basicJungseong);          // 1. 기본 음절표
+            createTable('table2', doubleChoseong, basicJungseong);         // 2. 쌍자음 음절표
+            createTable('table3', basicChoseong, complexJungseong);       // 3. 복합 모음표
+            createTable('table4', basicChoseong, jongseongList, true);     // 4. 받침 음절표
+            initBuilder();                                                 // 5. 조합기 초기화
+        };
+    </script>
+</body>
+</html>
