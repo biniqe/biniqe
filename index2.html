@@ -172,7 +172,7 @@
             color: #ffffff !important;
         }
 
-        /* ================= 한글 조합기 스타일 ================= */
+        /* ================= 깔끔한 한글 조합기 스타일 ================= */
         .builder-wrapper {
             display: flex;
             flex-direction: column;
@@ -181,6 +181,7 @@
             width: 100%;
         }
 
+        /* 상단 결과 및 조립 현황 카드 */
         .maker-display-card {
             background: #ffffff;
             border-radius: 16px;
@@ -258,6 +259,7 @@
         }
         .btn-reset:hover { background-color: #dee2e6; }
 
+        /* 하단 자모음 선택 팔레트 카드들 */
         .palette-card {
             background: #ffffff;
             border-radius: 16px;
@@ -364,6 +366,7 @@
             <p class="guide">초성, 중성, 종성을 선택하여 원하는 글자를 자유롭게 만들어보세요.</p>
             
             <div class="builder-wrapper">
+                <!-- 결과 및 상태 표시 카드 -->
                 <div class="maker-display-card">
                     <div class="status-indicators">
                         <div class="status-badge">초성: <span id="sCho">-</span></div>
@@ -379,6 +382,7 @@
                     </div>
                 </div>
 
+                <!-- 자음/모음 선택 팔레트들 -->
                 <div class="palette-card">
                     <div class="palette-title">🔴 초성 (자음)</div>
                     <div class="palette-grid" id="paletteCho"></div>
@@ -403,13 +407,11 @@
         const doubleChoseong = ['ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ'];
         const basicJungseong = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
         const complexJungseong = ['ㅐ', 'ㅒ', 'ㅔ', 'ㅖ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅢ'];
-        
-        // 종성에서 '없음' 제거
-        const jongseongList = ['ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const jongseongList = ['없음', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
 
         const choMap = { 'ㄱ':0, 'ㄲ':1, 'ㄴ':2, 'ㄷ':3, 'ㄸ':4, 'ㄹ':5, 'ㅁ':6, 'ㅂ':7, 'ㅃ':8, 'ㅅ':9, 'ㅆ':10, 'ㅇ':11, 'ㅈ':12, 'ㅉ':13, 'ㅊ':14, 'ㅋ':15, 'ㅌ':16, 'ㅍ':17, 'ㅎ':18 };
         const jungMap = { 'ㅏ':0, 'ㅐ':1, 'ㅑ':2, 'ㅒ':3, 'ㅓ':4, 'ㅔ':5, 'ㅕ':6, 'ㅖ':7, 'ㅗ':8, 'ㅘ':9, 'ㅙ':10, 'ㅚ':11, 'ㅛ':12, 'ㅜ':13, 'ㅝ':14, 'ㅞ':15, 'ㅟ':16, 'ㅠ':17, 'ㅡ':18, 'ㅢ':19, 'ㅣ':20 };
-        const jongMap = { 'ㄱ':1, 'ㄲ':2, 'ㄳ':3, 'ㄴ':4, 'ㄵ':5, 'ㄶ':6, 'ㄷ':7, 'ㄹ':8, 'ㄺ':9, 'ㄻ':10, 'ㄼ':11, 'ㄽ':12, 'ㄾ':13, 'ㄿ':14, 'ㅀ':15, 'ㅁ':16, 'ㅂ':17, 'ㅄ':18, 'ㅅ':19, 'ㅆ':20, 'ㅇ':21, 'ㅈ':22, 'ㅊ':23, 'ㅋ':24, 'ㅌ':25, 'ㅍ':26, 'ㅎ':27 };
+        const jongMap = { '없음':0, 'ㄱ':1, 'ㄲ':2, 'ㄳ':3, 'ㄴ':4, 'ㄵ':5, 'ㄶ':6, 'ㄷ':7, 'ㄹ':8, 'ㄺ':9, 'ㄻ':10, 'ㄼ':11, 'ㄽ':12, 'ㄾ':13, 'ㄿ':14, 'ㅀ':15, 'ㅁ':16, 'ㅂ':17, 'ㅄ':18, 'ㅅ':19, 'ㅆ':20, 'ㅇ':21, 'ㅈ':22, 'ㅊ':23, 'ㅋ':24, 'ㅌ':25, 'ㅍ':26, 'ㅎ':27 };
 
         const consonantNames = {
             'ㄱ':'기역', 'ㄲ':'쌍기역', 'ㄴ':'니은', 'ㄷ':'디귿', 'ㄸ':'쌍디귿',
@@ -418,7 +420,7 @@
             'ㅋ':'키읔', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
         };
 
-        const getSyllable = (cho, jung, jong = '') => {
+        const getSyllable = (cho, jung, jong = '없음') => {
             if (!cho && !jung) return '';
             const cIdx = choMap[cho] !== undefined ? choMap[cho] : 0;
             const jIdx = jungMap[jung] !== undefined ? jungMap[jung] : 0;
@@ -475,7 +477,7 @@
 
                 colHeaders.forEach((colHead, cIdx) => {
                     let td = document.createElement('td');
-                    let syllable = isJongseongTable ? getSyllable(rowHead, 'ㅏ', colHead) : getSyllable(rowHead, colHead, '');
+                    let syllable = isJongseongTable ? getSyllable(rowHead, 'ㅏ', colHead) : getSyllable(rowHead, colHead, '없음');
                     
                     td.textContent = syllable;
                     td.dataset.row = rIdx + 1;
@@ -525,7 +527,7 @@
         // ================= 조합기 로직 =================
         let currentCho = '';
         let currentJung = '';
-        let currentJong = '';
+        let currentJong = '없음';
 
         function initBuilder() {
             const allCho = [...basicChoseong, ...doubleChoseong];
@@ -559,15 +561,16 @@
                 pJung.appendChild(btn);
             });
 
-            // 종성 팔레트 ('없음' 버튼 제거, 두 번 누르면 해제)
+            // 종성 팔레트
             const pJong = document.getElementById('paletteJong');
             pJong.innerHTML = '';
             jongseongList.forEach(j => {
                 let btn = document.createElement('button');
                 btn.className = 'p-btn';
                 btn.textContent = j;
+                btn.style.fontSize = j === '없음' ? '12px' : '16px';
                 btn.onclick = () => {
-                    currentJong = (currentJong === j) ? '' : j;
+                    currentJong = (currentJong === j) ? '없음' : j;
                     updateBuilderUI();
                 };
                 pJong.appendChild(btn);
@@ -577,7 +580,7 @@
         function updateBuilderUI() {
             document.getElementById('sCho').textContent = currentCho || '-';
             document.getElementById('sJung').textContent = currentJung || '-';
-            document.getElementById('sJong').textContent = currentJong || '-';
+            document.getElementById('sJong').textContent = currentJong === '없음' ? '-' : currentJong;
 
             updatePaletteState('paletteCho', currentCho);
             updatePaletteState('paletteJung', currentJung);
@@ -601,7 +604,7 @@
         function resetBuilder() {
             currentCho = '';
             currentJung = '';
-            currentJong = '';
+            currentJong = '없음';
             updateBuilderUI();
         }
 
