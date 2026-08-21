@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한글 음절표 - 전체 음성 지원</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+            margin: 0;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p.guide {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            width: 45px;
+            height: 45px;
+            border: 1px solid #e0e0e0;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            cursor: pointer;
+        }
+
+        /* 분류 헤더 스타일 (클릭 가능하도록 마우스 커서 추가) */
+        th {
+            background-color: #f8f9fa;
+            color: #555;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: #e9ecef;
+            color: #000;
+        }
+
+        /* 마우스 오버 시 십자 하이라이트 */
+        td.highlight {
+            background-color: #e3f2fd !important;
+            color: #1565c0;
+        }
+
+        /* 클릭된 음절 강조 */
+        td.selected {
+            background-color: #2196f3 !important;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>한글 음절표</h2>
+    <p class="guide">글자뿐만 아니라 상단/측면의 자음과 모음 분류표를 클릭해도 발음을 들을 수 있습니다.</p>
+    
+    <div class="table-container">
+        <table id="hangeulTable">
+            <!-- 자바스크립트로 생성 -->
+        </table>
+    </div>
+
+    <script>
+        const choseong = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const jungseong = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
+
+        // 자음 이름 매핑 (TTS가 'ㄱ'을 읽을 때 '기역' 등으로 또렷하게 읽도록 변환)
+        const consonantNames = {
+            'ㄱ': '기역', 'ㄴ': '니은', 'ㄷ': '디귿', 'ㄹ': '리을',
+            'ㅁ': '미음', 'ㅂ': '비읍', 'ㅅ': '시옷', 'ㅇ': '이응',
+            'ㅈ': '지읒', 'ㅊ': '치읓', 'ㅋ': '키읔', 'ㅌ': '티읕',
+            'ㅍ': '피읖', 'ㅎ': '히읗'
+        };
+
+        const choMap = [0, 2, 3, 5, 6, 7, 9, 11, 12, 14, 15, 16, 17, 18]; 
+        const jungMap = [0, 2, 4, 6, 8, 12, 13, 17, 18, 20]; 
+
+        const getSyllable = (cIndex, jIndex) => {
+            const base = 44032; 
+            const choVal = choMap[cIndex] * 21 * 28;
+            const jungVal = jungMap[jIndex] * 28;
+            return String.fromCharCode(base + choVal + jungVal);
+        };
+
+        const table = document.getElementById('hangeulTable');
+
+        // 1. 헤더(모음) 행 생성
+        let headerRow = document.createElement('tr');
+        let cornerCell = document.createElement('th');
+        cornerCell.textContent = '자/모';
+        cornerCell.style.cursor = 'default';
+        headerRow.appendChild(cornerCell);
+
+        jungseong.forEach((j) => {
+            let th = document.createElement('th');
+            th.textContent = j;
+            // 모음 헤더 클릭 시 발음 재생
+            th.addEventListener('click', () => {
+                playPronunciation(j);
+            });
+            headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+
+        // 2. 본문(자음 + 음절) 행 생성
+        choseong.forEach((cho, cIndex) => {
+            let row = document.createElement('tr');
+            
+            // 자음 헤더 생성
+            let rowHeader = document.createElement('th');
+            rowHeader.textContent = cho;
+            // 자음 헤더 클릭 시 (예: 'ㄱ' -> '기역'으로 정확히 읽어줌)
+            rowHeader.addEventListener('click', () => {
+                const speakText = consonantNames[cho] || cho;
+                playPronunciation(speakText);
+            });
+            row.appendChild(rowHeader);
+
+            // 음절 셀 생성
+            jungseong.forEach((jung, jIndex) => {
+                let td = document.createElement('td');
+                const syllable = getSyllable(cIndex, jIndex);
+                
+                td.textContent = syllable;
+                td.dataset.row = cIndex + 1;
+                td.dataset.col = jIndex + 1;
+                
+                td.addEventListener('mouseenter', () => {
+                    highlightCell(cIndex + 1, jIndex + 1);
+                });
+
+                td.addEventListener('click', () => {
+                    playPronunciation(syllable);
+                    selectCell(td, cIndex + 1, jIndex + 1);
+                });
+
+                row.appendChild(td);
+            });
+            table.appendChild(row);
+        });
+
+        table.addEventListener('mouseleave', () => {
+            clearHighlight();
+        });
+
+        function highlightCell(targetRow, targetCol) {
+            clearHighlight();
+            const cells = table.querySelectorAll('td[data-row]');
+            
+            cells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+
+                if (r === targetRow || c === targetCol) {
+                    cell.classList.add('highlight');
+                }
+            });
+        }
+
+        function selectCell(selectedTd, targetRow, targetCol) {
+            highlightCell(targetRow, targetCol);
+            selectedTd.classList.add('selected');
+        }
+
+        function clearHighlight() {
+            const cells = table.querySelectorAll('td');
+            cells.forEach(cell => {
+                cell.classList.remove('highlight', 'selected');
+            });
+        }
+
+        function playPronunciation(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 0.9;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
