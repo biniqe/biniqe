@@ -265,7 +265,7 @@
         .slot-row {
             display: flex;
             gap: 10px;
-            height: 90px;
+            height: 130px; /* 높이 늘림 */
         }
 
         .slot {
@@ -289,10 +289,9 @@
             color: rgba(0,0,0,0.5);
         }
 
-        /* 구역별 색상 테마 (스케치 반영) */
+        /* 구역별 색상 테마 */
         .slot.cho { background-color: #ffcdd2; color: #b71c1c; }
-        .slot.jung-v { background-color: #c8e6c9; color: #1b5e20; } /* 세로 모음 */
-        .slot.jung-h { background-color: #dcedc8; color: #33691e; } /* 가로 모음 */
+        .slot.jung-v { background-color: #c8e6c9; color: #1b5e20; } /* 중성 */
         .slot.jong { background-color: #bbdefb; color: #0d47a1; }
 
         .result-display-box {
@@ -386,22 +385,16 @@
 
         <!-- 페이지 5: 한글 만들기 조합 페이지 -->
         <div id="page5" class="page-section">
-            <h2>한글 만들기 조합</h2>
-            <p class="guide">양쪽 팔레트에서 자음과 모음을 골라 가운데 틀에 넣고 소리를 들어보세요!</p>
             
             <div class="builder-layout">
-                <!-- 왼쪽 팔레트 (초성 및 가로 모음) -->
+                <!-- 왼쪽 팔레트 (초성) -->
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div class="palette-box">
-                        <div class="palette-title">초성 선택 (자음)</div>
+                        <div class="palette-title">초성</div>
                         <div class="palette-grid" id="paletteCho"></div>
                     </div>
                     <div class="palette-box">
-                        <div class="palette-title">중성 선택 (가로 모음)</div>
-                        <div class="palette-grid" id="paletteJungH"></div>
-                    </div>
-                    <div class="palette-box">
-                        <div class="palette-title">종성 선택 (받침)</div>
+                        <div class="palette-title">종성</div>
                         <div class="palette-grid" id="paletteJong"></div>
                     </div>
                 </div>
@@ -416,21 +409,14 @@
                             <span id="txtCho"></span>
                         </div>
                         <div class="slot jung-v" id="slotJungV">
-                            <span class="slot-label">세로모음</span>
+                            <span class="slot-label">중성</span>
                             <span id="txtJungV"></span>
-                        </div>
-                    </div>
-
-                    <div class="slot-row" style="height: 70px;">
-                        <div class="slot jung-h" id="slotJungH">
-                            <span class="slot-label">가로모음</span>
-                            <span id="txtJungH"></span>
                         </div>
                     </div>
 
                     <div class="slot-row" style="height: 80px;">
                         <div class="slot jong" id="slotJong">
-                            <span class="slot-label">종성(받침)</span>
+                            <span class="slot-label">종성</span>
                             <span id="txtJong"></span>
                         </div>
                     </div>
@@ -441,10 +427,10 @@
                     </div>
                 </div>
 
-                <!-- 오른쪽 팔레트 (세로 모음) -->
+                <!-- 오른쪽 팔레트 (중성) -->
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div class="palette-box" style="width: 140px;">
-                        <div class="palette-title">중성 선택 (세로 모음)</div>
+                        <div class="palette-title">중성</div>
                         <div class="palette-grid col-2" id="paletteJungV"></div>
                     </div>
                 </div>
@@ -459,36 +445,31 @@
         const doubleChoseong = ['ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ'];
         const basicJungseong = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
         const complexJungseong = ['ㅐ', 'ㅒ', 'ㅔ', 'ㅖ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅢ'];
-        const jongseongList = ['없음', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-
-        // 세로 모음 / 가로 모음 분류
-        const verticalJung = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅣ'];
-        const horizontalJung = ['ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ'];
+        const jongseongList = ['ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
 
         const choMap = { 'ㄱ':0, 'ㄲ':1, 'ㄴ':2, 'ㄷ':3, 'ㄸ':4, 'ㄹ':5, 'ㅁ':6, 'ㅂ':7, 'ㅃ':8, 'ㅅ':9, 'ㅆ':10, 'ㅇ':11, 'ㅈ':12, 'ㅉ':13, 'ㅊ':14, 'ㅋ':15, 'ㅌ':16, 'ㅍ':17, 'ㅎ':18 };
         const jungMap = { 'ㅏ':0, 'ㅐ':1, 'ㅑ':2, 'ㅒ':3, 'ㅓ':4, 'ㅔ':5, 'ㅕ':6, 'ㅖ':7, 'ㅗ':8, 'ㅘ':9, 'ㅙ':10, 'ㅚ':11, 'ㅛ':12, 'ㅜ':13, 'ㅝ':14, 'ㅞ':15, 'ㅟ':16, 'ㅠ':17, 'ㅡ':18, 'ㅢ':19, 'ㅣ':20 };
-        const jongMap = { '없음':0, 'ㄱ':1, 'ㄲ':2, 'ㄳ':3, 'ㄴ':4, 'ㄵ':5, 'ㄶ':6, 'ㄷ':7, 'ㄹ':8, 'ㄺ':9, 'ㄻ':10, 'ㄼ':11, 'ㄽ':12, 'ㄾ':13, 'ㄿ':14, 'ㅀ':15, 'ㅁ':16, 'ㅂ':17, 'ㅄ':18, 'ㅅ':19, 'ㅆ':20, 'ㅇ':21, 'ㅈ':22, 'ㅊ':23, 'ㅋ':24, 'ㅌ':25, 'ㅍ':26, 'ㅎ':27 };
+        const jongMap = { '':0, 'ㄱ':1, 'ㄲ':2, 'ㄳ':3, 'ㄴ':4, 'ㄵ':5, 'ㄶ':6, 'ㄷ':7, 'ㄹ':8, 'ㄺ':9, 'ㄻ':10, 'ㄼ':11, 'ㄽ':12, 'ㄾ':13, 'ㄿ':14, 'ㅀ':15, 'ㅁ':16, 'ㅂ':17, 'ㅄ':18, 'ㅅ':19, 'ㅆ':20, 'ㅇ':21, 'ㅈ':22, 'ㅊ':23, 'ㅋ':24, 'ㅌ':25, 'ㅍ':26, 'ㅎ':27 };
 
         const consonantNames = {
             'ㄱ':'기역', 'ㄲ':'쌍기역', 'ㄴ':'니은', 'ㄷ':'디귿', 'ㄸ':'쌍디귿',
             'ㄹ':'리을', 'ㅁ':'미음', 'ㅂ':'비읍', 'ㅃ':'쌍비읍', 'ㅅ':'시옷',
             'ㅆ':'쌍시옷', 'ㅇ':'이응', 'ㅈ':'지읒', 'ㅉ':'쌍지읒', 'ㅊ':'치읓',
-            'ㅋ':'키읔', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
+            'ㅋ':'키eun', 'ㅌ':'티읕', 'ㅍ':'피읖', 'ㅎ':'히읗'
         };
 
-        const getSyllable = (cho, jung, jong = '없음') => {
+        const getSyllable = (cho, jung, jong = '') => {
             if (!cho && !jung) return '';
             const cIdx = choMap[cho] !== undefined ? choMap[cho] : 0;
             const jIdx = jungMap[jung] !== undefined ? jungMap[jung] : 0;
             const jngIdx = jongMap[jong] !== undefined ? jongMap[jong] : 0;
             
-            // 초성과 모음이 모두 있어야 완전한 유니코드 조합 글자 생성 가능
             if (cho && jung) {
                 return String.fromCharCode(44032 + (cIdx * 21 * 28) + (jIdx * 28) + jngIdx);
             } else if (cho && !jung) {
-                return cho; // 자음만 있는 경우
+                return cho;
             } else if (!cho && jung) {
-                return jung; // 모음만 있는 경우
+                return jung;
             }
             return '';
         };
@@ -537,7 +518,7 @@
 
                 colHeaders.forEach((colHead, cIdx) => {
                     let td = document.createElement('td');
-                    let syllable = isJongseongTable ? getSyllable(rowHead, 'ㅏ', colHead) : getSyllable(rowHead, colHead, '없음');
+                    let syllable = isJongseongTable ? getSyllable(rowHead, 'ㅏ', colHead) : getSyllable(rowHead, colHead, '');
                     
                     td.textContent = syllable;
                     td.dataset.row = rIdx + 1;
@@ -586,12 +567,10 @@
 
         // ================= 한글 조합기 로직 =================
         let currentCho = '';
-        let currentJungV = '';
-        let currentJungH = '';
-        let currentJong = '없음';
+        let currentJung = '';
+        let currentJong = '';
 
         function initBuilder() {
-            // 기본 자음 전체 (기본 + 쌍자음)
             const allCho = [...basicChoseong, ...doubleChoseong];
             const allJung = [...basicJungseong, ...complexJungseong];
 
@@ -603,50 +582,36 @@
                 btn.className = 'p-btn';
                 btn.textContent = c;
                 btn.onclick = () => {
-                    currentCho = (currentCho === c) ? '' : c; // 다시 누르면 해제
+                    currentCho = (currentCho === c) ? '' : c;
                     updateBuilderUI();
                 };
                 pCho.appendChild(btn);
             });
 
-            // 2. 세로 모음 팔레트 채우기
+            // 2. 중성 팔레트 채우기 (가로+세로 통합)
             const pJungV = document.getElementById('paletteJungV');
             pJungV.innerHTML = '';
-            allJung.filter(j => verticalJung.includes(j) || j === 'ㅐ' || j === 'ㅒ' || j === 'ㅔ' || j === 'ㅖ' || j === 'ㅢ').forEach(j => {
+            allJung.forEach(j => {
                 let btn = document.createElement('button');
                 btn.className = 'p-btn';
                 btn.textContent = j;
                 btn.onclick = () => {
-                    currentJungV = (currentJungV === j) ? '' : j;
+                    currentJung = (currentJung === j) ? '' : j;
                     updateBuilderUI();
                 };
                 pJungV.appendChild(btn);
             });
 
-            // 3. 가로 모음 팔레트 채우기
-            const pJungH = document.getElementById('paletteJungH');
-            pJungH.innerHTML = '';
-            allJung.filter(j => horizontalJung.includes(j)).forEach(j => {
-                let btn = document.createElement('button');
-                btn.className = 'p-btn';
-                btn.textContent = j;
-                btn.onclick = () => {
-                    currentJungH = (currentJungH === j) ? '' : j;
-                    updateBuilderUI();
-                };
-                pJungH.appendChild(btn);
-            });
-
-            // 4. 종성 팔레트 채우기
+            // 3. 종성 팔레트 채우기
             const pJong = document.getElementById('paletteJong');
             pJong.innerHTML = '';
             jongseongList.forEach(j => {
                 let btn = document.createElement('button');
                 btn.className = 'p-btn';
                 btn.textContent = j;
-                btn.style.fontSize = j === '없음' ? '11px' : '15px';
+                btn.style.fontSize = '15px';
                 btn.onclick = () => {
-                    currentJong = (currentJong === j) ? '없음' : j;
+                    currentJong = (currentJong === j) ? '' : j;
                     updateBuilderUI();
                 };
                 pJong.appendChild(btn);
@@ -654,21 +619,15 @@
         }
 
         function updateBuilderUI() {
-            // 화면 슬롯 텍스트 업데이트
             document.getElementById('txtCho').textContent = currentCho;
-            document.getElementById('txtJungV').textContent = currentJungV;
-            document.getElementById('txtJungH').textContent = currentJungH;
-            document.getElementById('txtJong').textContent = currentJong === '없음' ? '' : currentJong;
+            document.getElementById('txtJungV').textContent = currentJung;
+            document.getElementById('txtJong').textContent = currentJong;
 
-            // 팔레트 버튼 활성화 표시 스타일 갱신
             updatePaletteActiveState('paletteCho', currentCho);
-            updatePaletteActiveState('paletteJungV', currentJungV);
-            updatePaletteActiveState('paletteJungH', currentJungH);
+            updatePaletteActiveState('paletteJungV', currentJung);
             updatePaletteActiveState('paletteJong', currentJong);
 
-            // 조합된 글자 계산 (세로 모음 우선, 없으면 가로 모음 적용)
-            let activeJung = currentJungV || currentJungH || '';
-            let resultChar = getSyllable(currentCho, activeJung, currentJong);
+            let resultChar = getSyllable(currentCho, currentJung, currentJong);
             document.getElementById('txtResult').textContent = resultChar || '-';
         }
 
@@ -684,8 +643,7 @@
         }
 
         function playCombinedSyllable() {
-            let activeJung = currentJungV || currentJungH || '';
-            let resultChar = getSyllable(currentCho, activeJung, currentJong);
+            let resultChar = getSyllable(currentCho, currentJung, currentJong);
             if (resultChar) {
                 playPronunciation(resultChar);
             } else {
@@ -695,11 +653,11 @@
 
         // 초기화 실행
         window.onload = () => {
-            createTable('table1', basicChoseong, basicJungseong);          // 1. 기본 음절표
-            createTable('table2', doubleChoseong, basicJungseong);         // 2. 쌍자음 음절표
-            createTable('table3', basicChoseong, complexJungseong);       // 3. 복합 모음표
-            createTable('table4', basicChoseong, jongseongList, true);     // 4. 받침 음절표
-            initBuilder();                                                 // 5. 조합기 초기화
+            createTable('table1', basicChoseong, basicJungseong);          
+            createTable('table2', doubleChoseong, basicJungseong);         
+            createTable('table3', basicChoseong, complexJungseong);       
+            createTable('table4', basicChoseong, jongseongList, true);     
+            initBuilder();                                                 
         };
     </script>
 </body>
