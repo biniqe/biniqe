@@ -92,7 +92,7 @@
         td.highlight { background-color: #e3f2fd !important; color: #1565c0; }
         td.selected { background-color: #2196f3 !important; color: #ffffff !important; }
 
-        /* ================= 아기용 맞춤 조합 레이아웃 (간격 좁힘 적용) ================= */
+        /* ================= 아기용 맞춤 조합 레이아웃 (간격 극소화 & 종성 6개 배치) ================= */
         .baby-layout-wrapper {
             display: flex;
             flex-direction: column;
@@ -111,23 +111,23 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             box-sizing: border-box;
         }
 
         .baby-top-row {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             width: 100%;
         }
 
-        /* 아이콘 간격을 좁히기 위해 gap을 3px로 축소 */
+        /* 아이콘 간격을 1px로 대폭 줄여서 촘촘하게 배치 */
         .palette-box {
             border-radius: 12px;
-            padding: 8px;
+            padding: 6px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 3px; 
+            gap: 1px; 
             justify-items: center;
             align-content: start;
             box-sizing: border-box;
@@ -135,20 +135,25 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
+        /* 종성 박스 전용: 한 줄에 6개씩(6열) 배치 */
+        .palette-box.box-jong-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
         .box-cho { 
             background: #ffcdd2; 
             border: 2px solid #ef5350; 
             flex: 1.1; 
-            height: 260px; 
+            height: 235px; 
         }
         
         .center-result-box {
             background: #fffde7;
             border: 3px solid #ffb300;
             border-radius: 16px;
-            width: 140px;
-            min-width: 140px;
-            height: 260px;
+            width: 130px;
+            min-width: 130px;
+            height: 235px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -158,7 +163,7 @@
         }
 
         .result-char {
-            font-size: 70px;
+            font-size: 65px;
             font-weight: bold;
             color: #d32f2f;
             line-height: 1;
@@ -168,30 +173,30 @@
             background: #c8e6c9; 
             border: 2px solid #66bb6a; 
             flex: 1.1; 
-            height: 260px; 
+            height: 235px; 
         }
 
         .box-jong { 
             background: #bbdefb; 
             border: 2px solid #42a5f5; 
             width: 100%; 
-            height: 115px; 
+            height: 95px; 
         }
 
         .p-btn {
             background-color: #ffffff;
             border: 1px solid rgba(0,0,0,0.2);
-            border-radius: 6px;
-            width: 38px;
-            height: 38px;
-            font-size: 15px;
+            border-radius: 5px;
+            width: 35px;
+            height: 35px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.1s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             padding: 0;
         }
         .p-btn:hover { background-color: #f1f1f1; transform: scale(0.95); }
@@ -240,7 +245,7 @@
         <div id="page3" class="page-section"><h2>복합 모음표</h2><div class="table-container"><table id="table3"></table></div></div>
         <div id="page4" class="page-section"><h2>받침(종성) 음절표</h2><div class="table-container"><table id="table4"></table></div></div>
         
-        <!-- 페이지 5: 아이콘 간격이 좁혀진 최적화 조합 화면 -->
+        <!-- 페이지 5: 간격 대폭 축소 및 종성 6열 배치 적용 화면 -->
         <div id="page5" class="page-section">
             <h2>한글 만들기 조합</h2>
             <p class="guide">자음과 모음을 눌러서 글자를 만들어 봐요!</p>
@@ -258,8 +263,8 @@
                         <div class="palette-box box-jung-right" id="paletteJungRight" title="중성 (모음)"></div>
                     </div>
 
-                    <!-- 하단: 종성 (받침 전체) -->
-                    <div class="palette-box box-jong" id="paletteJong" title="종성 (받침)"></div>
+                    <!-- 하단: 종성 (받침 전체 - 한 줄에 6개씩 배치) -->
+                    <div class="palette-box box-jong box-jong-grid" id="paletteJong" title="종성 (받침)"></div>
 
                     <!-- 제어 버튼 -->
                     <div class="control-panel">
@@ -369,7 +374,7 @@
             }
         }
 
-        const consonantNames = {'ㄱ':'기역','ㄲ':'쌍기역','ㄴ':'니은','ㄷ':'디귿','ㄸ':'쌍디귿','ㄹ':'리을','ㅁ':'미음','ㅂ':'비읍','ㅃ':'쌍비읍','ㅅ':'시옷','ㅆ':'쌍시옷','ㅇ':'이응','ㅈ':'지읒','ㅉ':'쌍지읒','ㅊ':'치읓','ㅋ':'키읔','ㅌ':'티읕','ㅍ':'피읖','ㅎ':'히읗'};
+        const consonantNames = {'ㄱ':'기역','ㄲ':'쌍기역','ㄴ':'니은','ㄷ':'디귿','ㄸ':'쌍디귿','ㄹ':'리을','ㅁ':'미음','ㅂ':'비읍','ㅃ':'쌍비읍','ㅅ':'시옷','ㅆ':'쌍시옷','ㅇ':'이응','ㅈ':'지읒','ㅉ':'쌍지읒','ㅊ':'치읓','ㅋ':'키으','ㅌ':'티읕','ㅍ':'피읖','ㅎ':'히엏'};
         
         function createTable(tableId, rowHeaders, colHeaders, isJongseongTable = false) {
             const table = document.getElementById(tableId);
