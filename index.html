@@ -81,7 +81,7 @@
         .page-section.active { display: flex; }
 
         h2 { color: #333; margin: 4px 0; text-align: center; font-size: 18px; }
-        p.guide { color: #666; font-size: 12px; margin-bottom: 8px; text-align: center; }
+        p.guide { color: #666; font-size: 12px; margin-bottom: 6px; text-align: center; }
 
         .table-container { overflow-x: auto; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); max-width: 100%; }
         table { border-collapse: collapse; text-align: center; }
@@ -92,7 +92,7 @@
         td.highlight { background-color: #e3f2fd !important; color: #1565c0; }
         td.selected { background-color: #2196f3 !important; color: #ffffff !important; }
 
-        /* ================= 세로 비율 버튼 및 초밀착 간격 레이아웃 ================= */
+        /* ================= 올바른 세로형 비율 & 박스 안쪽 정렬 레이아웃 ================= */
         .baby-layout-wrapper {
             display: flex;
             flex-direction: column;
@@ -111,31 +111,29 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             box-sizing: border-box;
         }
 
         .baby-top-row {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             width: 100%;
         }
 
-        /* 박스 내부 간격을 바짝 좁힘 */
         .palette-box {
             border-radius: 10px;
-            padding: 4px;
+            padding: 6px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2px; 
+            grid-template-columns: repeat(4, 1fr); /* 기본 초성/중성은 4열 */
+            gap: 3px; 
             justify-items: center;
-            align-content: start;
+            align-content: center;
             box-sizing: border-box;
-            overflow: hidden;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
-        /* 종성은 6개씩 배치 */
+        /* 종성은 한 줄에 6개씩(6열) 정렬 */
         .palette-box.box-jong-grid {
             grid-template-columns: repeat(6, 1fr);
         }
@@ -143,8 +141,8 @@
         .box-cho { 
             background: #ffcdd2; 
             border: 2px solid #ef5350; 
-            flex: 1.1; 
-            height: 220px; 
+            flex: 1.2; 
+            min-height: 230px; 
         }
         
         .center-result-box {
@@ -153,7 +151,7 @@
             border-radius: 14px;
             width: 120px;
             min-width: 120px;
-            height: 220px;
+            min-height: 230px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -172,25 +170,26 @@
         .box-jung-right { 
             background: #c8e6c9; 
             border: 2px solid #66bb6a; 
-            flex: 1.1; 
-            height: 220px; 
+            flex: 1.2; 
+            min-height: 230px; 
         }
 
+        /* 종성 박스 높이 확보 및 내부 여백 조절 */
         .box-jong { 
             background: #bbdefb; 
             border: 2px solid #42a5f5; 
             width: 100%; 
-            height: 80px; 
+            min-height: 110px; 
         }
 
-        /* 핵심: 가로가 좁고 세로로 긴 직사각형 비율(세로형 버튼) 구현 */
+        /* 세로형 비율 버튼 크기 조정 (박스 내부에 딱 맞게 핏팅) */
         .p-btn {
             background-color: #ffffff;
             border: 1px solid rgba(0,0,0,0.2);
-            border-radius: 4px;
-            width: 29px;   /* 가로 폭을 줄임 */
-            height: 40px;  /* 세로 높이를 늘려 세로 비율로 만듦 */
-            font-size: 14px;
+            border-radius: 6px;
+            width: 100%;
+            height: 48px;  /* 세로로 긴 직사각형 모양 */
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -199,6 +198,7 @@
             transition: all 0.1s;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             padding: 0;
+            box-sizing: border-box;
         }
         .p-btn:hover { background-color: #f1f1f1; transform: scale(0.95); }
         .p-btn.active { background-color: #1565c0; color: white; border-color: #0d47a1; }
@@ -212,7 +212,7 @@
         }
 
         .btn-action {
-            padding: 6px 20px;
+            padding: 8px 22px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: bold;
@@ -246,7 +246,7 @@
         <div id="page3" class="page-section"><h2>복합 모음표</h2><div class="table-container"><table id="table3"></table></div></div>
         <div id="page4" class="page-section"><h2>받침(종성) 음절표</h2><div class="table-container"><table id="table4"></table></div></div>
         
-        <!-- 페이지 5: 세로형 비율 버튼 및 초밀착 배치 화면 -->
+        <!-- 페이지 5: 삐져나감 없이 깔끔하게 정돈된 세로형 조합 화면 -->
         <div id="page5" class="page-section">
             <h2>한글 만들기 조합</h2>
             <p class="guide">자음과 모음을 눌러서 글자를 만들어 봐요!</p>
@@ -264,7 +264,7 @@
                         <div class="palette-box box-jung-right" id="paletteJungRight" title="중성 (모음)"></div>
                     </div>
 
-                    <!-- 하단: 종성 (받침 전체 - 한 줄에 6개씩 세로형 배치) -->
+                    <!-- 하단: 종성 (받침 전체 - 한 줄에 6개씩 세로형 배치 및 높이 확보) -->
                     <div class="palette-box box-jong box-jong-grid" id="paletteJong" title="종성 (받침)"></div>
 
                     <!-- 제어 버튼 -->
@@ -375,7 +375,7 @@
             }
         }
 
-        const consonantNames = {'ㄱ':'기역','ㄲ':'쌍기역','ㄴ':'니은','ㄷ':'디귿','ㄸ':'쌍디귿','ㄹ':'리을','ㅁ':'미음','ㅂ':'비읍','ㅃ':'쌍비읍','ㅅ':'시옷','ㅆ':'쌍시옷','ㅇ':'이응','ㅈ':'지읒','ㅉ':'쌍지읒','ㅊ':'치읓','ㅋ':'키읔','ㅌ':'티읕','ㅍ':'피읖','ㅎ':'히읗'};
+        const consonantNames = {'ㄱ':'기역','ㄲ':'쌍기역','ㄴ':'니은','ㄷ':'디귿','ㄸ':'쌍디귿','ㄹ':'리을','ㅁ':'미음','ㅂ':'비읍','ㅃ':'쌍비읍','ㅅ':'시옷','ㅆ':'쌍시옷','ㅇ':'이응','ㅈ':'지읒','ㅉ':'쌍지읒','ㅊ':'치읓','ㅋ':'키읔','ㅌ':'티읕','ㅍ':'피읖','ㅎ':'히엏'};
         
         function createTable(tableId, rowHeaders, colHeaders, isJongseongTable = false) {
             const table = document.getElementById(tableId);
