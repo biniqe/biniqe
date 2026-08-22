@@ -590,13 +590,17 @@ function playPronunciation(text) {
             
             // 💡 목소리에 힘과 생기를 주기 위한 설정값 조정
             utterance.rate = 0.9;   // 속도를 조금 더 천천히 (또박또박)
-            utterance.pitch = 1.2;   // 음높이를 약간 높여서 밝고 생기 있는 느낌으로 (기본값은 1.0)
+            utterance.pitch = 1.25;   // 음높이를 약간 높여서 밝고 생기 있는 느낌으로 (기본값은 1.0)
             
-            // 한국어 지원 목소리(가능한 경우 자연스러운 목소리 선택)
+            // 태블릿에서 가장 자연스러운 한국어 음성 선택
             const voices = window.speechSynthesis.getVoices();
-            const koreanVoice = voices.find(voice => voice.lang === 'ko-KR' || voice.lang === 'ko_KR');
-            if (koreanVoice) {
-                utterance.voice = koreanVoice;
+            const bestVoice = voices.find(v => v.lang === 'ko-KR' && (v.name.includes('Google') || v.name.includes('Natural')));
+            const fallbackVoice = voices.find(v => v.lang === 'ko-KR' || v.lang === 'ko_KR');
+            
+            if (bestVoice) {
+                utterance.voice = bestVoice;
+            } else if (fallbackVoice) {
+                utterance.voice = fallbackVoice;
             }
 
             window.speechSynthesis.speak(utterance);
